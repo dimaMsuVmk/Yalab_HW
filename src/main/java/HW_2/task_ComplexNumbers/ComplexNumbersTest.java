@@ -1,7 +1,5 @@
 package HW_2.task_ComplexNumbers;
 
-import java.util.Scanner;
-
 public class ComplexNumbersTest {
     public static void main(String[] args) {
 
