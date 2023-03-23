@@ -9,7 +9,7 @@ public class Test {
         new File("sortFile").mkdir();
         new File("data").mkdir();
 
-        File dataFile = new Generator().generate("data\\data.txt", 10000);
+        File dataFile = new Generator().generate("data\\data.txt", 1_00);
         System.out.println(new Validator(dataFile).isSorted()); // false
         File sortedFile = new Sorter().sortFile(dataFile);
         System.out.println(new Validator(sortedFile).isSorted()); // true

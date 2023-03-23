@@ -15,39 +15,39 @@ public class Sorter {
     public static File sortFile(File dataFile) throws IOException {
         //колличество чисел в файле
         //375_000_000 чисел будем хранить в 512 файлах
-        int sizeOfFile = 375_000_000 / 512;
+        int sizeOfFile = 375_000_000/512;//столько чисел в одном файле
         List<File> listOfFiles = new ArrayList<>();
 
         int i = 0;// "i+1" чисел уже разместили по мелким файлам
         File fileBuf;
-        PrintWriter pw = null;
+        BufferedWriter bw = null;
 
         //разместим числа в разных файлах,файлы храним в list
-        try(Scanner sc = new Scanner(new FileInputStream(dataFile))) {
-            while (sc.hasNext()) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(dataFile)))) {
+            while (br.ready()) {
                 if (i % sizeOfFile == 0) {
-                    if(pw != null) {
-                        pw.flush();
-                        pw.close();
+                    if (bw != null) {
+                        bw.flush();
+                        bw.close();
                     }
                     fileBuf = new File("sortFile//f" + partOfName++ + ".txt");
-                    pw = new PrintWriter(fileBuf);
+                    bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileBuf)));
                     listOfFiles.add(fileBuf);
                 }
-                pw.println(sc.nextLong());
+                bw.write(Long.parseLong(br.readLine()) + "\n");
                 i++;// "i+1" чисел уже считали с большого файла
             }
-            pw.flush();
+            bw.flush();
         }
         //сортируем содержимое файлов
         for (int j = 0; j < listOfFiles.size(); j++) {
             //копируем файл в массив
             Long[] arrSort = copyFileToArray(listOfFiles.get(j));
             //сортировка массива
-            mergeSort(arrSort,arrSort.length);
-            try(PrintWriter printWriter = new PrintWriter(new FileOutputStream(listOfFiles.get(j),false))) {
+            mergeSort(arrSort, arrSort.length);
+            try (BufferedWriter printWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(listOfFiles.get(j))))) {
                 for (int k = 0; k < arrSort.length; k++) {
-                    printWriter.println(arrSort[k].longValue());
+                    printWriter.write(arrSort[k] + "\n");
                 }
             }
         }
@@ -55,8 +55,9 @@ public class Sorter {
 
         return mergeAllFiles(listOfFiles);
     }
-//////////////////////////////////////////////////
-    private static File mergeAllFiles(List<File> listOfFiles){
+
+    /////////////////////////////////////////////////
+    private static File mergeAllFiles(List<File> listOfFiles) throws IOException {
         while(listOfFiles.size() != 1) {
             List<File> NEW_listOfFiles = new ArrayList<>();
             for (int j = 0; j < listOfFiles.size(); j = j + 2) {
@@ -68,50 +69,68 @@ public class Sorter {
             }
             listOfFiles = NEW_listOfFiles;
         }
+////////////////////////////////////////////////////////
+//        //Отсортированый рез-т можно увидеть в файле "data\\dataCopy.txt"
+//        try(Scanner sc = new Scanner(listOfFiles.get(0));
+//            PrintWriter pw = new PrintWriter("data\\dataCopy.txt")){
+//            while (sc.hasNext()){
+//                pw.println(sc.nextLong());
+//            }
+//        } catch (FileNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
+//////////////////////////////////////////////////////////////
+
         return listOfFiles.get(0);
     }
-//////////////////////////////////////////////////
-    private static File mergeTwoFiles(File f1,File f2){
+
+/////////////////////////////////////////////////////////
+    private static File mergeTwoFiles(File f1, File f2) throws IOException {
         File out = new File("sortFile//" + partOfName++ + ".txt");
-        try(Scanner sc1 = new Scanner(f1);
-            Scanner sc2 = new Scanner(f2);
-            PrintWriter pw = new PrintWriter(out)) {
-            long left = sc1.nextLong();
-            long right = sc2.nextLong();
-            while (sc1.hasNext()&&sc2.hasNext()){
-                if(left < right){
-                    pw.println(left);
-                    left = sc1.nextLong();
+        try (
+                BufferedReader br1 = new BufferedReader(new FileReader(f1));
+                BufferedReader br2 = new BufferedReader(new FileReader(f2));
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out)))) {
+            String l1=br1.readLine(),l2=br2.readLine();
+            long left=Long.parseLong(l1),right=Long.parseLong(l2);
+
+            while (true) {
+                if (left < right) {
+                    bw.write(left + "\n");
+                    if((l1 = br1.readLine()) == null) {
+                        bw.write(Long.parseLong(l2) + "\n");
+                        while ((l2 = br2.readLine()) != null) {
+                            bw.write(Long.parseLong(l2) + "\n");
+                        }
+                        break;
+                    }
+                    left=Long.parseLong(l1);
                 } else {
-                    pw.println(right);
-                    right = sc2.nextLong();
+                    bw.write(right + "\n");
+                    if((l2 = br2.readLine()) == null) {
+                        bw.write(Long.parseLong(l1) + "\n");
+                        while ((l1 = br1.readLine()) != null) {
+                            bw.write(Long.parseLong(l1) + "\n");
+                        }
+                        break;
+                    }
+                    right=Long.parseLong(l2);
                 }
             }
-            if(left < right) pw.println(left); else pw.println(right);
-
-            while (sc1.hasNext()){
-                pw.println(sc1.nextLong());
-            }
-            while (sc2.hasNext()){
-                pw.println(sc2.nextLong());
-            }
-            pw.flush();
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            bw.flush();
         }
         return out;
     }
 /////////////////////////////////////////////////
 
     //копируем файл в массив
-    private static Long[] copyFileToArray(File dataFile){
+    private static Long[] copyFileToArray(File dataFile) {
         List<Long> list = new ArrayList<>();
-        try(Scanner sc = new Scanner(new FileInputStream(dataFile))) {
-            while (sc.hasNext()) {
-                list.add(sc.nextLong());
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(dataFile)))) {
+            while (br.ready()) {
+                list.add(Long.parseLong(br.readLine()));//
             }
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
         Long[] arr = new Long[list.size()];
@@ -120,7 +139,8 @@ public class Sorter {
         }
         return arr;
     }
-///////////////////////////////////////////////
+
+    ///////////////////////////////////////////////
     private static void mergeSort(Long[] a, int n) {
         if (n < 2) {
             return;
@@ -140,6 +160,7 @@ public class Sorter {
 
         merge(a, l, r, mid, n - mid);
     }
+
     private static void merge(
             Long[] a, Long[] l, Long[] r, int left, int right) {
 
@@ -147,8 +168,7 @@ public class Sorter {
         while (i < left && j < right) {
             if (l[i] <= r[j]) {
                 a[k++] = l[i++];
-            }
-            else {
+            } else {
                 a[k++] = r[j++];
             }
         }
@@ -161,3 +181,5 @@ public class Sorter {
     }
 
 }
+
+
