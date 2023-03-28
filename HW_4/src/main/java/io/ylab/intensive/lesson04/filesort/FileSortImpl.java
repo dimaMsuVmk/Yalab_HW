@@ -13,18 +13,15 @@ import static io.ylab.intensive.lesson04.filesort.FileSorterTest.initDb;
 
 public class FileSortImpl implements FileSorter {
   private DataSource dataSource;
+  private long BATCH_SIZE;
 
   public FileSortImpl(DataSource dataSource) {
+    this.BATCH_SIZE = 1_000_000;
     this.dataSource = dataSource;
   }
 
   @Override
   public File sort(File data) {
-    /**
-     * selectSort(File data,String targetFile,boolean sortBatch) принимает два новых параметра
-     * targetFile - имя файла,куда положить отсортированые значения
-     * sortBatch - true/false -  использовать batch-processing или нет
-     */
     selectSort(data,"fileSortWithoutBatch",false);
     /**
      * "Сбросим" базу данных
@@ -42,6 +39,11 @@ public class FileSortImpl implements FileSorter {
     return selectSort(data,"fileSortBatch",true);
   }
 
+  /**
+   * selectSort(File data,String targetFile,boolean sortBatch) принимает два новых параметра
+   * targetFile - имя файла,куда положить отсортированые значения
+   * sortBatch - true/false -  использовать batch-processing или нет
+   */
   private File selectSort(File data,String targetFile,boolean sortBatch){
     long timeStart = System.currentTimeMillis();
     if(sortBatch) save(data); else saveWithoutBatch(data);
@@ -74,10 +76,16 @@ public class FileSortImpl implements FileSorter {
       connection.setAutoCommit(false);
       Statement statement = connection.createStatement();
       String line = null;
+      int i = 0;//counter Of Batch
       while ((line = br.readLine()) != null){
+        i++;
         long buf = Long.parseLong(line);
         String sql = "INSERT INTO numbers(val) VALUES (\'" +buf +"\')";
         statement.addBatch(sql);
+        if (i % BATCH_SIZE == 0) {
+          statement.executeBatch();
+          connection.commit();//надо ли комитить каждый блок данных? спорный вопрос
+        }
       }
       statement.executeBatch();
       connection.commit();
