@@ -15,6 +15,7 @@ public class OperationDb {
         String deleteSql = "DELETE FROM person WHERE person_id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(deleteSql)) {
+            preparedStatement.setLong(1,personId);
             int countDeleted = preparedStatement.executeUpdate();
             if(countDeleted == 0) System.out.println("Была попытка удаления, данные не найдены в БД");
         }

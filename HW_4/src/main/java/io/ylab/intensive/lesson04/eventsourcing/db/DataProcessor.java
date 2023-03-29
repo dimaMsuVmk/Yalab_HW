@@ -13,28 +13,31 @@ public class DataProcessor {
     private String queue = "queue";
     private String exhangeName = "exc";
     public void process(DataSource dataSource,ConnectionFactory connectionFactory) throws Exception {
-        try(Connection connection = connectionFactory.newConnection();
-            Channel channel = getChannel(connection)) {
+        OperationDb operations = new OperationDb(dataSource);
 
-            OperationDb operationDb = new OperationDb(dataSource);
+        try (Connection connection = connectionFactory.newConnection();
+             Channel channel = connection.createChannel()) {
             ObjectMapper mapper = new ObjectMapper();
-            Consumer consumer = new DefaultConsumer(channel){
-                @Override
-                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-                    try {
-                        if ("save".equals(envelope.getRoutingKey())) {
-                            String objectJson = new String(body, StandardCharsets.UTF_8);
-                            Person person = mapper.readValue(objectJson, Person.class);
-                            operationDb.save(person);
-                        } else if ("delete".equals(envelope.getRoutingKey())) {
-                            Long id = Long.parseLong(new String(body, StandardCharsets.UTF_8));
-                            operationDb.delete(id);
-                        }
-                    }catch (Exception e){}
+
+            while (!Thread.currentThread().isInterrupted()) {
+
+                GetResponse response = channel.basicGet(queue, true);
+                if (response != null) {
+                    Envelope envelope = response.getEnvelope();
+
+                    if ("save".equals(envelope.getRoutingKey())) {
+                        String objectJson = new String(response.getBody());
+                        Person person = mapper.readValue(objectJson, Person.class);
+                        operations.save(person);
+                    } else if ("delete".equals(envelope.getRoutingKey())) {
+                        Long id = Long.parseLong(new String(response.getBody()));
+                        operations.delete(id);
+                    }
                 }
-            };
-            channel.basicConsume(queue,true,consumer);
+
+            }
         }
+
 
     }
 

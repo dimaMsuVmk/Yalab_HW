@@ -45,11 +45,10 @@ public class PersonApiImpl implements PersonApi {
   public void deletePerson(Long personId) {
     try(Connection connection = connectionFactory.newConnection();
         Channel channel = getChannel(connection)) {
-      channel.exchangeDeclare(exhangeName, BuiltinExchangeType.TOPIC);
       channel.basicPublish(exhangeName,"delete",null,personId.toString().getBytes(StandardCharsets.UTF_8));
 
     } catch (IOException | TimeoutException e) {
-      throw new RuntimeException(e);
+      System.out.println(e.getMessage());
     }
   }
 
@@ -63,7 +62,7 @@ public class PersonApiImpl implements PersonApi {
       channel.basicPublish(exhangeName,"save",null,json.getBytes(StandardCharsets.UTF_8));
 
     } catch (IOException | TimeoutException e) {
-      throw new RuntimeException(e);
+      System.out.println(e.getMessage());
     }
   }
 
@@ -82,6 +81,7 @@ public class PersonApiImpl implements PersonApi {
         person.setName(resultSet.getString("first_name"));
         person.setMiddleName(resultSet.getString("middle_name"));
       }
+      resultSet.close();
     } catch (SQLException e) {
       System.out.println(e.getMessage());
     }
