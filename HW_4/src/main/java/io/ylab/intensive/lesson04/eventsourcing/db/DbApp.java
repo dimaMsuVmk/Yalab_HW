@@ -1,5 +1,6 @@
 package io.ylab.intensive.lesson04.eventsourcing.db;
 
+import java.io.StringWriter;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 
@@ -11,6 +12,8 @@ public class DbApp {
   public static void main(String[] args) throws Exception {
     DataSource dataSource = initDb();
     ConnectionFactory connectionFactory = initMQ();
+    DataProcessor dataProcessor = new DataProcessor();
+    dataProcessor.process(dataSource,connectionFactory);
 
     // тут пишем создание и запуск приложения работы с БД
   }
@@ -21,8 +24,8 @@ public class DbApp {
   
   private static DataSource initDb() throws SQLException {
     String ddl = "" 
-                     + "drop table if exists person;" 
-                     + "create if not exists table person (\n"
+                     + "drop table if exists person; "
+                     + "create table if not exists person (\n"
                      + "person_id bigint primary key,\n"
                      + "first_name varchar,\n"
                      + "last_name varchar,\n"
