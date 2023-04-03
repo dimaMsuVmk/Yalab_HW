@@ -1,34 +1,29 @@
-package io.ylab.intensive.lesson05.eventsourcing.db;
+package eventsourcing.api;
 
-import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import com.rabbitmq.client.ConnectionFactory;
-import io.ylab.intensive.lesson05.DbUtil;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
+//@ComponentScan("eventsourcing.api")
 public class Config {
-
   @Bean
-  public DataSource dataSource() throws SQLException {
+  public PersonApi personApi(){
+    return new PersonApiImpl();
+  }
+  
+  @Bean
+  public DataSource dataSource() {
     PGSimpleDataSource dataSource = new PGSimpleDataSource();
     dataSource.setServerName("localhost");
     dataSource.setUser("postgres");
-    dataSource.setPassword("postgres");
+    dataSource.setPassword("vagina35");
     dataSource.setDatabaseName("postgres");
     dataSource.setPortNumber(5432);
-
-    String ddl = ""
-                     + "drop table if exists person;"
-                     + "create if not exists table person (\n"
-                     + "person_id bigint primary key,\n"
-                     + "first_name varchar,\n"
-                     + "last_name varchar,\n"
-                     + "middle_name varchar\n"
-                     + ")";
-    DbUtil.applyDdl(ddl, dataSource);
-    
     return dataSource;
   }
 
@@ -42,5 +37,4 @@ public class Config {
     connectionFactory.setVirtualHost("/");
     return connectionFactory;
   }
-  
 }

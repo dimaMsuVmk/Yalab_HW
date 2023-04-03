@@ -1,4 +1,4 @@
-package io.ylab.intensive.lesson05.sqlquerybuilder;
+package sqlquerybuilder;
 
 import javax.sql.DataSource;
 

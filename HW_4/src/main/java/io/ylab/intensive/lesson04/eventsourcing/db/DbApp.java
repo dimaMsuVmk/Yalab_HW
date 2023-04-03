@@ -24,8 +24,12 @@ public class DbApp {
     DataSource dataSource = initDb();
     ConnectionFactory connectionFactory = initMQ();
     // тут пишем создание и запуск приложения работы с БД
-    DataProcessor dataProcessor = new DataProcessor();
-    dataProcessor.process(dataSource,connectionFactory);
+    new DataProcessor().process(dataSource,connectionFactory);
+//    Runnable runnable = () -> {
+//      new DataProcessor().process(dataSource,connectionFactory);
+//    };
+//    Thread thread = new Thread(runnable);
+//    thread.start();
   }
   
   private static ConnectionFactory initMQ() throws Exception {

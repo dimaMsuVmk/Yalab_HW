@@ -1,4 +1,4 @@
-package io.ylab.intensive.lesson05;
+package util;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -25,7 +25,7 @@ public class DbUtil {
     PGSimpleDataSource dataSource = new PGSimpleDataSource();
     dataSource.setServerName("localhost");
     dataSource.setUser("postgres");
-    dataSource.setPassword("postgres");
+    dataSource.setPassword("vagina35");
     dataSource.setDatabaseName("postgres");
     dataSource.setPortNumber(5432);
     dataSource.getConnection().close();

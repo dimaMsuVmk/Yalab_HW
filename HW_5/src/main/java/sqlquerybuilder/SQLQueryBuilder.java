@@ -1,4 +1,4 @@
-package io.ylab.intensive.lesson05.sqlquerybuilder;
+package sqlquerybuilder;
 
 import java.sql.SQLException;
 import java.util.List;
