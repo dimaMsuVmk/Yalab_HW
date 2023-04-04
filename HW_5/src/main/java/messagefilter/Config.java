@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan("io.ylab.intensive.lesson05.messagefilter")
+@ComponentScan("messagefilter")
 public class Config {
   
   @Bean
@@ -28,7 +28,7 @@ public class Config {
     PGSimpleDataSource dataSource = new PGSimpleDataSource();
     dataSource.setServerName("localhost");
     dataSource.setUser("postgres");
-    dataSource.setPassword("postgres");
+    dataSource.setPassword("vagina35");
     dataSource.setDatabaseName("postgres");
     dataSource.setPortNumber(5432);
     return dataSource;
