@@ -24,7 +24,7 @@ public class Config {
     PGSimpleDataSource dataSource = new PGSimpleDataSource();
     dataSource.setServerName("localhost");
     dataSource.setUser("postgres");
-    dataSource.setPassword("vagina35");
+    dataSource.setPassword("postgres");
     dataSource.setDatabaseName("postgres");
     dataSource.setPortNumber(5432);
 
