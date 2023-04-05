@@ -16,8 +16,6 @@ import java.util.concurrent.TimeoutException;
 public class SaveApi {
     @Autowired
     private ConnectionFactory connectionFactory;
-//    @Autowired
-//    private DataSource dataSource;
     private String queueIn = "input";
     private String queueOut = "output";
     private String exhangeName = "exc";
