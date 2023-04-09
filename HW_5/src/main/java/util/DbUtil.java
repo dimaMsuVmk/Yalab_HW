@@ -1,4 +1,4 @@
-package io.ylab.intensive.lesson04;
+package util;
 
 import java.sql.Connection;
 import java.sql.SQLException;

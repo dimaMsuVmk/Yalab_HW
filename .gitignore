@@ -38,8 +38,6 @@ javaDev
 *.iml
 .idea
 target
-.classpath
-.project
 .checkstyle
 /.settings/
 /.springBeans
@@ -47,3 +45,4 @@ target
 java.generated
 application.properties
 /bin
+
